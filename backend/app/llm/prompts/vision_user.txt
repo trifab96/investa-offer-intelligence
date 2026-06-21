@@ -1,0 +1,1 @@
+Analysiere das folgende Bildmaterial aus dem Maklerangebot "{subject}". Die Bilder können Exposé-Seiten, Lagepläne, Grundrisse, Visualisierungen oder Fotos sein. Liefere deine Einschätzung gemäß Schema.

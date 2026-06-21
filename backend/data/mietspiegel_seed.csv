@@ -1,0 +1,27 @@
+# Seed Mietspiegel / local rent benchmark dataset (documented simplification).
+# No free comprehensive Mietspiegel API exists; this curated per-region table
+# provides realistic reference rents (cold rent, EUR per m2 per month) and an
+# indicative price-per-m2 band for plausibility checks. Values are approximate
+# market reference points (2023-2024) for prototype scoring only.
+# Columns: plz_prefix,ort,bundesland,rent_eur_m2,buy_price_eur_m2
+10,Berlin,Berlin,13.5,5200
+12,Berlin,Berlin,12.8,4800
+13,Berlin,Berlin,12.2,4500
+14,Potsdam,Brandenburg,11.5,4300
+16,Bernau bei Berlin,Brandenburg,9.8,3400
+20,Hamburg,Hamburg,15.2,6100
+21,Hamburg,Hamburg,13.0,4800
+22,Hamburg,Hamburg,14.5,5600
+21029,Hamburg,Hamburg,12.5,4300
+21502,Geesthacht,Schleswig-Holstein,9.5,3200
+24,Kiel,Schleswig-Holstein,10.2,3300
+30,Hannover,Niedersachsen,11.0,3600
+40,Düsseldorf,Nordrhein-Westfalen,13.8,5000
+50,Köln,Nordrhein-Westfalen,13.5,4900
+60,Frankfurt am Main,Hessen,16.0,6300
+61348,Bad Homburg,Hessen,13.5,5200
+65,Wiesbaden,Hessen,13.0,4700
+70,Stuttgart,Baden-Württemberg,15.5,5400
+80,München,Bayern,21.0,9800
+81,München,Bayern,20.0,9200
+90,Nürnberg,Bayern,12.5,4200

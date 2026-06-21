@@ -1,0 +1,42 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ---- Node / frontend ----
+node_modules/
+frontend/dist/
+*.local
+
+# ---- Env & secrets ----
+.env
+.env.*
+!.env.example
+
+# ---- Data / uploads (do not commit large binaries) ----
+backend/uploads/
+
+# ---- VERTRAULICH: echte Maklerdaten + interne Challenge-Unterlagen NICHT ins
+#      öffentliche Repo (echte Adressen/Namen/Preise) ----
+Beispiele Immobilienangebote/
+*.msg
+*.eml
+KI Challenge*.pdf
+
+# ---- Präsentationen enthalten Screenshots mit echten Angebotsdaten ----
+presentations/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ---- Docker ----
+pgdata/

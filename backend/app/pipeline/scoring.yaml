@@ -1,0 +1,111 @@
+# Scoring configuration: band thresholds and heuristic tuning.
+# Weights themselves come from .env (SCORE_WEIGHT_*) but can be inspected here.
+bands:
+  reject: [0.0, 3.999]
+  review: [4.0, 6.999]
+  pursue: [7.0, 10.0]
+
+# Gross yield (annual rent / price) mapped to a 0-10 price attractiveness score.
+yield_score_breakpoints:
+  - { yield_pct: 2.0, score: 2.0 }
+  - { yield_pct: 3.0, score: 4.0 }
+  - { yield_pct: 4.0, score: 6.0 }
+  - { yield_pct: 5.0, score: 8.0 }
+  - { yield_pct: 6.5, score: 10.0 }
+
+# Condition keyword -> condition sub-score (0-10).
+condition_scores:
+  neubau: 9.0
+  saniert: 8.0
+  modernisiert: 7.0
+  gepflegt: 6.5
+  bestand: 5.0
+  renovierungsbeduerftig: 3.5
+  sanierungsbeduerftig: 3.0
+  abrissreif: 4.0   # land value play -> not strictly bad
+
+# --------------------------------------------------------------------------- #
+# Asset-class-aware scoring profiles. Each offer is classified into one class,
+# which selects WHICH sub-scores apply and their weights. This makes the score
+# domain-appropriate: a development plot is not judged on rental yield, and a
+# let income block is judged on occupancy + reversion. Weights per profile are
+# normalized at runtime, so they need not sum to exactly 1.0.
+# --------------------------------------------------------------------------- #
+classification:
+  # Keyword -> asset class (checked against objektart + nutzungsmoeglichkeiten).
+  keywords:
+    development_land:
+      - grundstück
+      - grundstueck
+      - baugrundstück
+      - bauland
+      - projektentwicklung
+      - entwicklungsgrundstück
+      - abriss
+      - neubau nach
+    commercial:
+      - büro
+      - buero
+      - gewerbe
+      - logistik
+      - halle
+      - einzelhandel
+      - hotel
+      - labor
+      - rechenzentrum
+      - produktion
+    income_residential:
+      - wohnanlage
+      - mehrfamilienhaus
+      - mfh
+      - wohn- und geschäftshaus
+      - zinshaus
+      - vollvermietet
+      - wohnimmobilie
+
+profiles:
+  income_residential:
+    label: "Einkommensobjekt (Wohnen)"
+    weights:
+      price_vs_market: 0.22
+      occupancy: 0.18
+      reversion: 0.18
+      location: 0.22
+      condition: 0.20
+  development_land:
+    label: "Entwicklungsgrundstück"
+    weights:
+      buildability: 0.35
+      location: 0.30
+      size_usage: 0.20
+      condition: 0.15
+  commercial:
+    label: "Gewerbeobjekt"
+    weights:
+      price_vs_market: 0.25
+      occupancy: 0.20
+      location: 0.30
+      condition: 0.25
+  generic:
+    label: "Allgemein"
+    weights:
+      location: 0.30
+      price_vs_market: 0.30
+      condition: 0.15
+      size_usage: 0.15
+      data_completeness: 0.10
+
+# Each listed risk keyword deducts this many points (capped) from the final
+# score, so a high yield on a structurally flawed asset cannot sail through.
+risk_penalty:
+  per_risk: 0.4
+  max_total: 2.0
+  severe_keywords:   # double weight for these
+    - altlast
+    - kontamin
+    - denkmal
+    - erbpacht
+    - leerstand
+    - sanierungsstau
+    - rückbau
+

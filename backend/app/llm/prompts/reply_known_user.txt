@@ -1,0 +1,8 @@
+Verfasse die Antwort an den Makler.
+
+Angebotsbetreff: {subject}
+Makler: {makler}
+Objekt (Kurzbeschreibung): {objektart} in {ort}
+Adresse/Lage: {adresse}
+
+Das Objekt ist bereits unter folgender Referenz bekannt: {match_reason}

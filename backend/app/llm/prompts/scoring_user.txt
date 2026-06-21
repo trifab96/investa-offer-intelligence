@@ -1,0 +1,12 @@
+Bewerte das folgende Angebot qualitativ.
+
+EXTRAHIERTE FAKTEN (JSON):
+{extraction_json}
+
+ANREICHERUNGSDATEN (JSON, aus externen öffentlichen Quellen):
+{enrichment_json}
+
+BEREITS BERECHNETE KENNZAHLEN (vom System, nicht neu berechnen):
+{metrics_json}
+
+Liefere deine qualitative Einschätzung gemäß Schema.

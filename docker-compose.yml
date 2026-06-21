@@ -1,0 +1,65 @@
+name: investa-offer-intel
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: investa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-investa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-prod}
+      POSTGRES_DB: ${POSTGRES_DB:-offers}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-investa} -d ${POSTGRES_DB:-offers}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: investa-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override host so the URL works inside the compose network regardless of .env.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-investa}:${POSTGRES_PASSWORD:-change-me-in-prod}@postgres:5432/${POSTGRES_DB:-offers}
+      UPLOAD_DIR: /data/uploads
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health').status==200 else 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    container_name: investa-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,5 @@
+Hier ist der Volltext eines Maklerangebots (E-Mail-Text und Anhänge zusammengeführt). Extrahiere die Fakten gemäß Schema. Wenn etwas fehlt: null.
+
+--- BEGINN ANGEBOT ---
+{offer_text}
+--- ENDE ANGEBOT ---
