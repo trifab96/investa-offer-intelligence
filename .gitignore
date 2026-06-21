@@ -31,6 +31,9 @@ KI Challenge*.pdf
 # ---- Präsentationen enthalten Screenshots mit echten Angebotsdaten ----
 presentations/
 
+# ---- Interne KI-Tooling-Konfiguration (nicht relevant fürs öffentliche Repo) ----
+.github/copilot-instructions.md
+
 # ---- OS / editor ----
 .DS_Store
 Thumbs.db
