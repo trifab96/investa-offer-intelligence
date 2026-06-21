@@ -17,23 +17,23 @@ Objekt bereits bekannt ist, es mit externen öffentlichen Daten anreichert und e
 **nachvollziehbaren 0–10-Attraktivitäts-Score** plus eine entscheidungsreife Zusammenfassung erzeugt
 — damit Analysten nur noch Zeit in die wenigen relevanten Angebote investieren.
 
-### Erfolgskriterien (Zuordnung zur Aufgabenstellung)
+### Erfolgskriterien
 
 | # | Anforderung | Wo umgesetzt |
 |---|-------------|--------------|
 | 4.1 | Web-Upload von E-Mail + Anhängen, Parsing (inkl. PDF), Strukturierung | Frontend + `ingestion`-Service |
-| 4.2 | **Pflicht:** Bekannt-Objekt-Erkennung via Fuzzy-Matching + Persistenz + Makler-Antwortentwurf | `dedup`-Modul + `objects`-Tabelle + `reply`-Generator |
+| 4.2 | Bekannt-Objekt-Erkennung via Fuzzy-Matching + Persistenz + Makler-Antwortentwurf | `dedup`-Modul + `objects`-Tabelle + `reply`-Generator |
 | 4.3 | Persistente Speicherung bekannter Objekte + jedes verarbeiteten Angebots & seiner Analyse | PostgreSQL-Schema |
-| 4.4 | **Kern:** Extraktion + verpflichtende externe Anreicherung (+ optional Vision/Risiko) | `extraction`- + `enrichment`-Module |
+| 4.4 | Extraktion + externe Anreicherung (+ Vision/Risiko) | `extraction`- + `enrichment`-Module |
 | 4.5 | 0–10-Bewertung mit Kennzahlen, Visualisierung, nachvollziehbarer Begründung | `scoring`-Modul + Dashboard |
-| 5 | LLM verpflichtend, nachvollziehbare Prompts, LLM+Heuristik, Docker Compose, DB, README, `.env.example` | gesamtes Repo |
+| 5 | LLM-Integration, nachvollziehbare Prompts, LLM+Heuristik, Docker Compose, DB, README, `.env.example` | gesamtes Repo |
 | 6 | Weitgehend automatisiert; dokumentierte Vereinfachungen | Pipeline + README-Abschnitt „Vereinfachungen“ |
 
-### Umsetzungsstand (was tatsächlich gebaut ist)
+### Umfang
 
-Alle **Pflicht**-Anforderungen (4.1–4.6, 5, 6) sind umgesetzt und Ende-zu-Ende auf den echten
-Beispielangeboten verifiziert (2 PDFs + 2 Outlook-`.msg` mit eingebetteten Anhängen). Über die Basis
-hinaus sind diese **optionalen / mehrwertstiftenden** Features ebenfalls gebaut:
+Alle Kern-Anforderungen (4.1–4.6, 5, 6) sind umgesetzt und Ende-zu-Ende auf den echten
+Beispielangeboten verifiziert (2 PDFs + 2 Outlook-`.msg` mit eingebetteten Anhängen). Darüber
+hinaus sind diese zusätzlichen Features gebaut:
 
 - **Asset-klassen-bewusstes Scoring** mit Profilen je Klasse + Risiko-Abzug (§3.5)
 - **Bildanalyse (4.4c)** — Vision-Modell liest gerenderte PDF-Seiten / Fotos, inkl. Anhängen in einer `.msg`
@@ -160,7 +160,7 @@ miete_ist, miete_soll, baujahr, confidence`. Fehlende Werte → `null` (niemals 
 Nutzt den „JSON / structured output“-Modus des Providers; Prompt + Roh-Antwort werden zur
 Nachvollziehbarkeit persistiert.
 
-### 3.3 Dedup / Objekt-Erkennung (4.2 — Pflicht)
+### 3.3 Dedup / Objekt-Erkennung (4.2)
 Hybrides, erklärbares Matching:
 1. **Normalisieren** der Adresse (Kleinschreibung, `str.→strasse` expandieren, Interpunktion entfernen, PLZ/Ort parsen).
 2. **Kandidaten laden** aus `objects` via `pg_trgm`-Ähnlichkeit auf `address_norm` (schneller Vorfilter).
@@ -172,7 +172,7 @@ Hybrides, erklärbares Matching:
    bereits bekannt → keine Provision), Anreicherung/Scoring überspringen (vorhandene Analyse nutzen).
 6. Bei neuem Objekt → kanonisches `object` anlegen, Pipeline fortsetzen.
 
-### 3.4 Externe Anreicherung (4.4b — Pflicht)
+### 3.4 Externe Anreicherung (4.4b)
 Wo möglich kostenlos / ohne Key; jeder Call in der DB mit Zeitstempel + Quelle gecacht
 (Nachvollziehbarkeit).
 
@@ -238,8 +238,7 @@ die zentralen Faktoren ausgewiesen, die den Score bewegen.
 - Ausgabe: `score`, `band` (0–3 reject / 4–6 review / 7–10 pursue), `asset_class(_label)`,
   `subscores[]`, `top_drivers[]`, `risk_penalty`, `rationale`, `risks[]`, `opportunities[]`.
 
-> **Warum dieses Design.** Es adressiert direkt die „Relevanz der gewählten Kriterien“ aus der
-> Aufgabenstellung und passt zu Investas Multi-Asset-Realität (Büros, Hotels, Labore, Wohnen,
+> **Warum dieses Design.** Es adressiert direkt die Relevanz der gewählten Kriterien und passt zu Investas Multi-Asset-Realität (Büros, Hotels, Labore, Wohnen,
 > Grundstücke). Profile liegen in `scoring.yaml`, sodass ein Analyst Gewichte nachjustieren oder eine
 > Asset-Klasse ergänzen kann **ohne Code anzufassen** — Heuristiken bleiben deterministisch, das LLM
 > bleibt auf das Urteil beschränkt, nie auf Arithmetik.
@@ -247,7 +246,7 @@ die zentralen Faktoren ausgewiesen, die den Score bewegen.
 ### 3.6 Makler-Antwort (4.2)
 LLM-generierte deutsche E-Mail-Antwort für bekannte Objekte: höflich, weist darauf hin, dass das
 Objekt bereits bekannt ist und keine Provision anfällt. Gespeichert, im UI angezeigt — **nicht
-versendet** (laut Aufgabe).
+versendet**.
 
 ---
 
@@ -354,7 +353,7 @@ erDiagram
 
 ```
 .
-├── README.md                     # Ausführungsanleitung (Root, laut Aufgabe)
+├── README.md                     # Ausführungsanleitung (Root)
 ├── docker-compose.yml            # frontend + backend + postgres (+ optional ocr)
 ├── .env.example                  # kommentiert, alle Konfig-Schlüssel
 ├── docs/
@@ -428,42 +427,23 @@ SCORE_WEIGHT_COMPLETENESS=0.10
 - `postgres` (mit `pg_trgm`; PostGIS-Image falls Geo-Distanz in SQL) + Named Volume → **Persistenz**.
 - `backend` (FastAPI/uvicorn) — hängt von `postgres` ab, Healthcheck auf `/api/health`.
 - `frontend` (Vite-Build via nginx) — proxyt `/api` zum Backend.
-- Alles via `docker compose up` → **lokal lauffähig**, ein einzelner Befehl (laut Aufgabe).
+- Alles via `docker compose up` → **lokal lauffähig**, ein einzelner Befehl.
 
 ---
 
-## 9. Bewusste Vereinfachungen (im README §6 zu dokumentieren)
+## 9. Bewusste Vereinfachungen
 
 | Vereinfachung | Begründung |
 |---------------|------------|
-| Pipeline = FastAPI-Async-Background-Task (kein Celery/Redis) | Weniger bewegliche Teile für einen 3-Tage-Prototyp; Status ist persistiert, die UX also identisch. Queue ist ein Drop-in-Upgrade. |
+| Pipeline = FastAPI-Async-Background-Task (kein Celery/Redis) | Weniger bewegliche Teile für einen Prototyp; Status ist persistiert, die UX also identisch. Queue ist ein Drop-in-Upgrade. |
 | Mietspiegel aus einer **mitgelieferten Seed-CSV** | Es existiert keine freie, umfassende Mietspiegel-API; ein kuratierter Datensatz je Region liefert realistische Benchmarks ohne Scraping. Quelle klar ausgewiesen. |
 | Öffentliches Nominatim/Overpass (rate-limitiert) | Kostenlos & ohne Key; ausreichend für Prototyp-Volumina. Self-Hosting ist der Produktionspfad. |
-| Antwort wird entworfen, nicht versendet | Laut Aufgabe explizit out of scope (4.2). |
+| Antwort wird entworfen, nicht versendet | Versand ist in diesem Prototyp bewusst out of scope. |
 | Demografie auf Gemeinde-Granularität | Wikidata-Abdeckung ist auf dieser Ebene verlässlich; feinere Daten erfordern bezahlte Quellen. |
 
 ---
 
-## 10. Drei-Tage-Plan
-
-**Tag 1 — Grundgerüst & Ingestion**
-- Repo-Scaffold, `docker-compose.yml`, `.env.example`, Postgres-Schema + Migrationen.
-- FastAPI-App + `/api/offers`-Upload, Dateispeicherung, `.msg`/`.eml`/PDF-Parsing (+OCR-Fallback).
-- LLM-Client (GitHub Models) + strukturierte Extraktion mit validiertem JSON. Angebote persistieren.
-
-**Tag 2 — Kern-Intelligenz**
-- Dedup/Objekt-Erkennung (normalize + pg_trgm + RapidFuzz + Geo) und `objects`-Registry.
-- Anreicherungs-Module (Nominatim, Overpass, Wikidata, Mietspiegel-Seed) mit Caching.
-- Hybrides Scoring (Heuristik + LLM) mit vollständigen Prompt-Traces; Makler-Antwort-Generator.
-
-**Tag 3 — UX, Feinschliff, Packaging**
-- React-Dashboard: Upload, Liste, Detail (Gauge/Charts), Vergleichsansicht.
-- Bekannt-Objekt-DB aus den bereitgestellten Beispielen seeden; End-to-End-Test auf den Angeboten.
-- README (Ausführung, Architektur-Zusammenfassung, Vereinfachungen), Tests, Cleanup, öffentliches Repo.
-
----
-
-## 11. Risiken & Gegenmaßnahmen
+## 10. Risiken & Gegenmaßnahmen
 
 | Risiko | Gegenmaßnahme |
 |--------|---------------|

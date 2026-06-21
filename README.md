@@ -39,21 +39,20 @@ Hinweis, dass keine Provision anfällt.
 
 ---
 
-## Was es tut (Zuordnung zur Aufgabenstellung)
+## Was es tut
 
-| Aufgabe | Feature |
+| Bereich | Feature |
 |---------|---------|
-| 4.1 Ingestion | Web-Upload von `.msg`/`.eml` + Anhängen; PDF-Parsing (Textebene + **OCR-Fallback**); strukturierte Ausgabe |
-| 4.2 Objekt-Erkennung **(Pflicht)** | Fuzzy-Adress-Matching (`pg_trgm` + RapidFuzz + Geo); persistente Registry bekannter Objekte; automatisch entworfene „bereits bekannt / keine Provision“-Antwort |
-| 4.3 Persistenz | PostgreSQL speichert jedes Angebot, geparste Dokumente, Analyse, Anreicherungs-Snapshot und Antwort |
-| 4.4 Analyse **(Kern)** | LLM-Extraktion (Typ, Lage, Größe, Preis, Zustand, Nutzung, Vermietungsstand) + **verpflichtende externe Anreicherung** (Geo, POIs, Demografie, Miet-Benchmark) + **Bildanalyse (Vision)** + Risiken/Chancen |
-| 4.5 Scoring | **0–10 asset-klassen-bewusster Hybrid-Score** (Heuristik + LLM, Profile je Klasse + Risiko-Abzug), Kennzahlen, **Top-3-Treiber**, Sub-Score-Visualisierung, nachvollziehbare Begründung, Mehrfach-Angebotsvergleich |
-| 5 Technik | LLM verpflichtend; **Prompts sind erstklassige, versionierte Dateien** mit vollständigen Traces; Docker Compose; persistente DB; kommentierte `.env.example` |
+| Ingestion | Web-Upload von `.msg`/`.eml` + Anhängen; PDF-Parsing (Textebene + **OCR-Fallback**); strukturierte Ausgabe |
+| Objekt-Erkennung | Fuzzy-Adress-Matching (`pg_trgm` + RapidFuzz + Geo); persistente Registry bekannter Objekte; automatisch entworfene „bereits bekannt / keine Provision“-Antwort |
+| Persistenz | PostgreSQL speichert jedes Angebot, geparste Dokumente, Analyse, Anreicherungs-Snapshot und Antwort |
+| Analyse | LLM-Extraktion (Typ, Lage, Größe, Preis, Zustand, Nutzung, Vermietungsstand) + **externe Anreicherung** (Geo, POIs, Demografie, Miet-Benchmark) + **Bildanalyse (Vision)** + Risiken/Chancen |
+| Scoring | **0–10 asset-klassen-bewusster Hybrid-Score** (Heuristik + LLM, Profile je Klasse + Risiko-Abzug), Kennzahlen, **Top-3-Treiber**, Sub-Score-Visualisierung, nachvollziehbare Begründung, Mehrfach-Angebotsvergleich |
+| Technik | LLM-gestützt; **Prompts sind erstklassige, versionierte Dateien** mit vollständigen Traces; Docker Compose; persistente DB; kommentierte `.env.example` |
 | Extras | Portfolio-**Dashboard** (Kennzahlen + Score-Histogramm), **Dokumentübersicht** (Seitenvorschau + extrahierter Text), **Karten**-Widget, Pro-Host-API-Throttling |
 
-Siehe [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) für das vollständige Design,
-[docs/PROMPTS.md](docs/PROMPTS.md) für den Prompt-Engineering-Katalog und
-[docs/PRESENTATION_GUIDE.md](docs/PRESENTATION_GUIDE.md) für das Demo-Skript + die Argumentationspunkte.
+Siehe [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) für das vollständige Design und
+[docs/PROMPTS.md](docs/PROMPTS.md) für den Prompt-Engineering-Katalog.
 
 ---
 
@@ -105,7 +104,7 @@ Daten liegen im Named Volume `pgdata`; Uploads im Volume `uploads`.
 
 ---
 
-## Externe Datenquellen (verpflichtende Anreicherung)
+## Externe Datenquellen
 
 | Quelle | Genutzt für | Auth |
 |--------|-------------|------|
@@ -151,7 +150,7 @@ pytest
 
 ---
 
-## Bewusste Vereinfachungen (gemäß Aufgabe §6)
+## Bewusste Vereinfachungen
 
 | Vereinfachung | Warum sie sinnvoll ist |
 |---------------|------------------------|
@@ -159,8 +158,8 @@ pytest
 | Mietspiegel aus einer mitgelieferten Seed-CSV | Es existiert keine freie, umfassende Mietspiegel-API; eine kuratierte Tabelle je Region liefert realistische Benchmarks ohne Scraping. |
 | Öffentliches Nominatim/Overpass (rate-limitiert) | Kostenlos + ohne Key; ausreichend für Prototyp-Volumina. Für Produktion self-hosten. |
 | Demografie auf Gemeinde-Granularität | Wikidata ist auf dieser Ebene verlässlich; feinere Daten erfordern bezahlte Quellen. |
-| Makler-Antwort wird **entworfen, nicht versendet** | Laut Aufgabe explizit out of scope (4.2). |
-| `Base.metadata.create_all` statt Alembic | Vertretbar für einen 3-Tage-Prototyp; Migrationen sind der Produktionspfad. |
+| Makler-Antwort wird **entworfen, nicht versendet** | Versand ist in diesem Prototyp bewusst out of scope. |
+| `Base.metadata.create_all` statt Alembic | Vertretbar für einen Prototyp; Migrationen sind der Produktionspfad. |
 
 ---
 

@@ -1,6 +1,6 @@
 # Prompt-Engineering-Katalog
 
-Dieses Dokument macht das Prompt Engineering **nachvollziehbar**, wie in der Challenge gefordert.
+Dieses Dokument macht das Prompt Engineering **nachvollziehbar**.
 Jeder LLM-Call im System ist:
 
 1. in einer **versionierten Template-Datei** unter `backend/app/llm/prompts/` definiert (niemals ein
@@ -39,7 +39,7 @@ Jeder LLM-Call im System ist:
 
 ### 3. Makler-Antwort (bekanntes Objekt) — `reply_known_system.txt` + `reply_known_user.txt`
 - **Zweck:** eine höfliche deutsche Antwort entwerfen, die darauf hinweist, dass das Objekt bereits
-  bekannt ist und keine Provision anfällt (laut 4.2). Die Antwort wird **entworfen, nicht versendet**.
+  bekannt ist und keine Provision anfällt. Die Antwort wird **entworfen, nicht versendet**.
 - **Ausgabe:** Freitext-E-Mail, im UI angezeigt.
 
 ## So inspiziert man einen Trace
