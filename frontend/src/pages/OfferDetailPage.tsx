@@ -83,7 +83,7 @@ export default function OfferDetailPage() {
         <ImageAnalysisCard analysis={data.enrichment.image_analysis} />
       )}
 
-      {data.scoring && (
+      {data.scoring && (data.scoring.rationale || data.scoring.risks || data.scoring.opportunities) && (
         <RisksOpportunities
           risks={data.scoring.risks}
           opportunities={data.scoring.opportunities}
@@ -366,10 +366,12 @@ function RisksOpportunities({
   opportunities,
   rationale,
 }: {
-  risks: string[];
-  opportunities: string[];
+  risks?: string[] | null;
+  opportunities?: string[] | null;
   rationale: string | null;
 }) {
+  const risksList = risks ?? [];
+  const opportunitiesList = opportunities ?? [];
   return (
     <div className="card card-pad">
       <h2 className="card-title mb-4">Einschätzung</h2>
@@ -382,7 +384,7 @@ function RisksOpportunities({
             Risiken
           </h3>
           <ul className="list-inside list-disc space-y-1 text-sm text-slate-600">
-            {risks.length ? risks.map((r, i) => <li key={i}>{r}</li>) : <li>—</li>}
+            {risksList.length ? risksList.map((r, i) => <li key={i}>{r}</li>) : <li>—</li>}
           </ul>
         </div>
         <div>
@@ -390,8 +392,8 @@ function RisksOpportunities({
             Chancen
           </h3>
           <ul className="list-inside list-disc space-y-1 text-sm text-slate-600">
-            {opportunities.length
-              ? opportunities.map((o, i) => <li key={i}>{o}</li>)
+            {opportunitiesList.length
+              ? opportunitiesList.map((o, i) => <li key={i}>{o}</li>)
               : <li>—</li>}
           </ul>
         </div>
